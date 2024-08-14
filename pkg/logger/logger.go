@@ -39,17 +39,3 @@ func Init() {
 	ErrorLogger = log.New(errorLogFile, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 }
-
-func Info(message ...any) {
-	InfoLogger.Println(message...)
-}
-
-func Warn(message ...any) {
-	WarningLogger.Println(message...)
-}
-
-func Err(message ...any) {
-	//TODO: Send error to sentry
-
-	ErrorLogger.Println(message...)
-}
