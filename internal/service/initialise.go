@@ -2,20 +2,12 @@ package service
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Rhaqim/trackdegens/config"
 	"github.com/Rhaqim/trackdegens/internal/repo"
 	"github.com/Rhaqim/trackdegens/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
-
-type TrackingRequest struct {
-	UserID       int64
-	ChatID       int64
-	TrackingInfo string
-	Timestamp    time.Time
-}
 
 func Start() {
 	botToken := config.Config.TelegramBotToken
