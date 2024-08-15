@@ -21,9 +21,11 @@ func Start() {
 
 	// Define the bot commands
 	commands := []tgbotapi.BotCommand{
-		{Command: "start", Description: "Start interacting with the bot"},
-		{Command: "track", Description: "Track an item or event"},
-		{Command: "status", Description: "Check tracking status"},
+		{Command: repo.Start.String(), Description: "Start interacting with the bot"},
+		{Command: repo.Track.String(), Description: "Track an item or event"},
+		{Command: repo.Status.String(), Description: "Check tracking status"},
+		{Command: repo.List.String(), Description: "List all tracked items"},
+		{Command: repo.Done.String(), Description: "Stop tracking an item"},
 	}
 
 	// Set the bot commands
@@ -40,6 +42,8 @@ func Start() {
 	// Map to store user requests
 	userRequests := make(map[int64]string)
 
+	userEntries := make(map[int64][]string)
+
 	for update := range updates {
 		if update.Message == nil { // Ignore non-Message updates
 			continue
@@ -51,7 +55,7 @@ func Start() {
 		// Handle commands
 		command := repo.Commands(update.Message.Command())
 		if command.IsValid() {
-			command.Handle(bot, update, userRequests)
+			command.Handle(bot, update, userRequests, userEntries)
 			continue
 		}
 
