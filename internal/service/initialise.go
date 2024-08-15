@@ -19,6 +19,19 @@ func Start() {
 
 	logger.InfoLogger.Printf("Authorized on account %s", bot.Self.UserName)
 
+	// Define the bot commands
+	commands := []tgbotapi.BotCommand{
+		{Command: "start", Description: "Start interacting with the bot"},
+		{Command: "track", Description: "Track an item or event"},
+		{Command: "status", Description: "Check tracking status"},
+	}
+
+	// Set the bot commands
+	_, err = bot.Request(tgbotapi.NewSetMyCommands(commands...))
+	if err != nil {
+		logger.ErrorLogger.Fatalf("Failed to set bot commands: %v", err)
+	}
+
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
@@ -41,8 +54,6 @@ func Start() {
 			command.Handle(bot, update, userRequests)
 			continue
 		}
-
-		fmt.Println("user requests", userRequests)
 
 		// Handle user responses to the tracking prompt
 		if status, exists := userRequests[userID]; exists && status == "awaiting_tracking_info" {
