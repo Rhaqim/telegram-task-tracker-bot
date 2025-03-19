@@ -12,5 +12,7 @@ func main() {
 
 	config.LoadConfig()
 
+	backup()
+
 	service.Start()
 }
