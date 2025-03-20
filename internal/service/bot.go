@@ -3,38 +3,29 @@ package service
 import (
 	"fmt"
 
-	"github.com/Rhaqim/trackdegens/config"
-	"github.com/Rhaqim/trackdegens/internal/repo"
+	"github.com/Rhaqim/trackdegens/internal/model"
 	"github.com/Rhaqim/trackdegens/pkg/logger"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Start() {
-	botToken := config.Config.TelegramBotToken
-
-	bot, err := tgbotapi.NewBotAPI(botToken)
-	if err != nil {
-		logger.ErrorLogger.Fatalf("Failed to create bot: %v", err)
-	}
-
-	logger.InfoLogger.Printf("Authorized on account %s", bot.Self.UserName)
+func Start(bot *tg.BotAPI) {
 
 	// Define the bot commands
-	commands := []tgbotapi.BotCommand{
-		{Command: repo.Start.String(), Description: "Start interacting with the bot"},
-		{Command: repo.Track.String(), Description: "Track an item or event"},
-		{Command: repo.Status.String(), Description: "Check tracking status"},
-		{Command: repo.List.String(), Description: "List all tracked items"},
-		{Command: repo.Done.String(), Description: "Stop tracking an item"},
+	commands := []tg.BotCommand{
+		{Command: model.Start.String(), Description: "Start interacting with the bot"},
+		{Command: model.Track.String(), Description: "Track an item or event"},
+		{Command: model.Status.String(), Description: "Check tracking status"},
+		{Command: model.List.String(), Description: "List all tracked items"},
+		{Command: model.Done.String(), Description: "Stop tracking an item"},
 	}
 
 	// Set the bot commands
-	_, err = bot.Request(tgbotapi.NewSetMyCommands(commands...))
+	_, err := bot.Request(tg.NewSetMyCommands(commands...))
 	if err != nil {
 		logger.ErrorLogger.Fatalf("Failed to set bot commands: %v", err)
 	}
 
-	u := tgbotapi.NewUpdate(0)
+	u := tg.NewUpdate(0)
 	u.Timeout = 60
 
 	updates := bot.GetUpdatesChan(u)
@@ -53,7 +44,7 @@ func Start() {
 		chatID := update.Message.Chat.ID
 
 		// Handle commands
-		command := repo.Commands(update.Message.Command())
+		command := model.Commands(update.Message.Command())
 		if command.IsValid() {
 			command.Handle(bot, update, userRequests, userEntries)
 			continue
@@ -68,14 +59,14 @@ func Start() {
 
 			// Send confirmation
 			confirmationMsg := fmt.Sprintf("Tracking '%s' has been set up.", trackingInfo)
-			msg := tgbotapi.NewMessage(chatID, confirmationMsg)
+			msg := tg.NewMessage(chatID, confirmationMsg)
 			_, err := bot.Send(msg)
 			if err != nil {
 				logger.ErrorLogger.Printf("Failed to send message: %v", err)
 			}
 
 			// Set a reminder
-			go repo.SetReminder(trackingInfo, chatID)
+			go model.SetReminder(trackingInfo, chatID)
 		}
 	}
 }
