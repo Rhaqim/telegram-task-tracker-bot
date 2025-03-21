@@ -9,6 +9,16 @@ import (
 	"github.com/Rhaqim/trackdegens/pkg/logger"
 )
 
+type BackupConfig struct {
+	BackupFilePath string
+	ContainerName  string
+	ContainerPath  string
+	BackupName     string
+	BackupPath     string
+	BackupCommand  string
+	BackupArgs     []string
+}
+
 type AppConfig struct {
 	TelegramBotToken string
 	BackupFilePath   string
@@ -45,17 +55,3 @@ func (c *Config) env(key, fallback string) string {
 	}
 	return fallback
 }
-
-// func LoadConfig() *AppConfig {
-// 	once.Do(func() {
-// 		err := godotenv.Load()
-// 		if err != nil {
-// 			logger.ErrorLogger.Printf("Error loading .env file")
-// 		}
-
-// 		Config = &AppConfig{
-// 			TelegramBotToken: Env("TELEGRAM_BOT_TOKEN", ""),
-// 		}
-// 	})
-
-// }

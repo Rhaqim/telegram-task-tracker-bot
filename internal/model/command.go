@@ -16,6 +16,12 @@ const (
 	Status Commands = "status"
 	List   Commands = "list"
 	Done   Commands = "done"
+
+	Backups       Commands = "backups"
+	ListBackup    Commands = "listbackup"
+	RestoreBackup Commands = "restorebackup"
+	DeleteBackup  Commands = "deletebackup"
+	SendBackup    Commands = "sendbackup"
 )
 
 func (c Commands) String() string {
@@ -109,6 +115,61 @@ func (c Commands) Handle(bot *tgbotapi.BotAPI, update tgbotapi.Update, userReque
 			if err != nil {
 				logger.ErrorLogger.Printf("Failed to send message: %v", err)
 			}
+		}
+
+	case Backups:
+		// Implement backup handling here
+		// For example, you can call a function to backup the database
+		backupDatabase()
+		// Then, send a message to the user
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Database backup completed successfully.")
+		_, err := bot.Send(msg)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to send message: %v", err)
+		}
+
+	case ListBackup:
+		// Implement listing backups here
+		// For example, you can call a function to list all backups
+		backups := listBackups()
+		// Then, send a message to the user
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, backups)
+		_, err := bot.Send(msg)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to send message: %v", err)
+		}
+
+	case RestoreBackup:
+		// Implement restoring backups here
+		// For example, you can call a function to restore a particular backup
+		restoreBackup(update.Message.Text)
+		// Then, send a message to the user
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Backup restored successfully.")
+		_, err := bot.Send(msg)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to send message: %v", err)
+		}
+
+	case DeleteBackup:
+		// Implement deleting backups here
+		// For example, you can call a function to delete a particular backup
+		deleteBackup(update.Message.Text)
+		// Then, send a message to the user
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Backup deleted successfully.")
+		_, err := bot.Send(msg)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to send message: %v", err)
+		}
+
+	case SendBackup:
+		// Implement sending backups here
+		// For example, you can call a function to send a backup file
+		sendBackupFile(bot, update.Message.Chat.ID, update.Message.Text)
+		// Then, send a message to the user
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Backup file sent.")
+		_, err := bot.Send(msg)
+		if err != nil {
+			logger.ErrorLogger.Printf("Failed to send message: %v", err)
 		}
 
 	default:

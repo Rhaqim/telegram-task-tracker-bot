@@ -8,7 +8,13 @@ import (
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Start(bot *tg.BotAPI) {
+func Start(botToken string) {
+	bot, err := tg.NewBotAPI(botToken)
+	if err != nil {
+		logger.ErrorLogger.Fatalf("Failed to create bot: %v", err)
+	}
+
+	logger.InfoLogger.Printf("Authorized on account %s", bot.Self.UserName)
 
 	// Define the bot commands
 	commands := []tg.BotCommand{
@@ -20,10 +26,16 @@ func Start(bot *tg.BotAPI) {
 	}
 
 	// Set the bot commands
-	_, err := bot.Request(tg.NewSetMyCommands(commands...))
+	_, err = bot.Request(tg.NewSetMyCommands(commands...))
 	if err != nil {
 		logger.ErrorLogger.Fatalf("Failed to set bot commands: %v", err)
 	}
+
+	// resp.Description = fmt.Sprintf("Bot commands set: %v", commands)
+
+	// resp.Parameters.MigrateToChatID = 0
+
+	// Start listening for updates
 
 	u := tg.NewUpdate(0)
 	u.Timeout = 60
